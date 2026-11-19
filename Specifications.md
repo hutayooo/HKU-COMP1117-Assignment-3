@@ -49,8 +49,12 @@ Level 3 (Example 2)= 8x64 = 512 filled
 - it receives grid, which is the 2d list
 - top and left (the row and column of the region's upper-left corner)
 - size (the side length of the square region)
+- it may only modify cells inside the square region spanning rows top through top + size - 1 and columns left through left + size - 1, setting filled cells to "#". it must not overwrite empty cells (".") inside the skipped center regions
 
 - **Base case:** which size, and what happens to the grid?
+- when size == 1, the region is a single cell at (top, left), so it sets grid[top][left] = "#" directly
+- because size is divided by 3 (size // 3) on every recursive step, size strictly decreases toward 1
+
 - **Recursive case:** the nine smaller squares. What is each one's side, and
   where is each one's upper-left corner, counted from (top, left)? Which
   square is skipped, and what is left in its cells?
