@@ -46,35 +46,57 @@ Level 3 (Example 2)= 8x64 = 512 filled
 ### fill_carpet(grid, top, left, size)
 
 - **What it receives, and what it changes in the grid:**
-- it receives grid, which is the 2d list
-- top and left (the row and column of the region's upper-left corner)
-- size (the side length of the square region)
-- it may only modify cells inside the square region spanning rows top through top + size - 1 and columns left through left + size - 1, setting filled cells to "#". it must not overwrite empty cells (".") inside the skipped center regions
+- It receives grid, which is the 2d list
+- Top and left (the row and column of the region's upper-left corner)
+- Size (the side length of the square region)
+- It may only modify cells inside the square region spanning rows top through top + size - 1 and columns left through left + size - 1, setting filled cells to "#". it must not overwrite empty cells (".") inside the skipped center regions
 
 - **Base case:** which size, and what happens to the grid?
-- when size == 1, the region is a single cell at (top, left), so it sets grid[top][left] = "#" directly
-- because size is divided by 3 (size // 3) on every recursive step, size strictly decreases toward 1
+- When size == 1, the region is a single cell at (top, left), so it sets grid[top][left] = "#" directly
+- Because size is divided by 3 (size // 3) on every recursive step, size strictly decreases toward 1
 
-- **Recursive case:** the nine smaller squares. What is each one's side, and
-  where is each one's upper-left corner, counted from (top, left)? Which
-  square is skipped, and what is left in its cells?
-- **Offsets:** for a region that does not start at (0, 0), give one example
-  of the smaller squares' corners.
+- **Recursive case:**
+- For size > 1, the square is divided 3x3 arrangement of 9 smaller squares. The sides of each square are side//3. 
+- For block indices r (row) in 0, 1, 2 and c (column) in 0, 1, 2, each sub-square's upper left corner is (top + r * sub, left + c * sub). We use the upper left square as the "reference point"
+- The center sub-square (r == 1 and c == 1) is skipped, leaving its cells as ".", while fill_carpet is called recursively on each of the remaining eight sub-squares
+
+- **Offsets:**
+- Lets say for a 9x9 region (size = 9) starting at top = 3, left = 6 (sub = 3), the top-middle sub-square (r = 0, c = 1) has its upper-left corner at (3 + 0 * 3, 6 + 1 * 3) = (3, 9) (and the center sub-square at r = 1, c = 1 is at (6, 9) and skipped)
 
 ### find_quadrant(top, left, size, row, col)
 
 - **What it receives and what it returns:**
-- **Rows:** which rows of the region are in the top half and which are in
-  the bottom half? Give the last row of the top half and the first row of
-  the bottom half.
+- It receives top and left, which are the row and column of the square region's upper-left corner
+- size, the length of a square region which is always guranteed to be a power of 2
+- row and col, the coordinates of a target cell inside that region
+- It returns identifiers (quadrant labels or "TL", "TR", "BL", or "BR"), indicating which of the four quadrants contains (row, col)
+
+- **Rows:**
+- With half = size // 2, the top half covers rows top through top + half - 1, and the bottom half covers rows top + half through top + size - 1
+- The last row of the top half is top + half - 1, and the first row of the bottom half is top + half
+
 - **Columns:** the same for the left and right halves.
-- **Offsets:** give one example with a region that does not start at (0, 0),
-  on both sides of a boundary.
+- With half = size // 2, the left half covers columns left through left + half - 1, and the right half covers columns left + half through left + size - 1
+- The last column of the left half is left + half - 1, and the first column of the right half is left + half
+
+- **Offsets:**
+- For a region with top = 4, left = 6, and size = 8 (half = 4), the row boundary is 8 and the column boundary is 10
+- row = 7, col = 9 is just above/left of the boundaries and falls in quadrant 0 (top-left)
+- While row = 8, col = 10 is just at/below the boundaries and falls in quadrant 3 (bottom-right)
 
 ### fill_tromino(grid, top, left, size, hole_row, hole_col, tile)
 
 - **What it receives, what it changes in the grid and what it returns:**
-  which cells may it change, and which must it leave alone?
+- It receives grid, the 2d list
+- top and left, upper-left corner of the region
+- size, power-of-2 side length
+- hole_row and hole_col, coordinates of the existing blocked/missing cell in this region
+- and tile, next integer tromino ID to assign
+
+- It may only write positive integer tile IDs to empty (0) cells inside rows top through top + size - 1 and columns left through left + size - 1
+- It must leave the region's existing blocked cell (hole_row, hole_col)
+- It must also not touch any already-filled tromino cells inside the region, and all cells outside the region must also be untouched
+- Returns the next available tile integer
 - **Base case:** which size, what is placed, and what is returned?
 - **The center cells:** for a region starting at (top, left), which four
   cells are they? Which quadrant is each one in?
