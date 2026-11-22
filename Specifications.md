@@ -145,8 +145,32 @@ For each of the other three quadrants, its blocked cell is the center cell belon
 - So, after placing k tiles, the counter reaches k + 1 and returns k + 1. So the actual number of tiles placed is (k + 1) - 1 = k
 
 ## Edge cases
+- Carpet at level 0 (size == 1): 
+- Creates a 1 × 1 grid initialized to "." 
+- count_filled(0) returns 8^0 = 1
+- fill_carpet(grid, 0, 0, 1) hits its base case (size == 1) immediately and sets grid[0][0] = "#"
+- Summary prints Filled: 1
 
-The inputs where something special happens, and what the program must do in
-each. For example: level 0 of each pattern, a hole on one of the four center
-cells, a hole on the edge of the board, or a region in a recursive call that
-does not start at (0, 0).
+- Tromino at level = 0 (size = 1): 
+- Creates a 1 × 1 grid with grid[0][0] = "X"
+- fill_tromino hits its base case (size == 1) immediately, places no tiles, and returns 1
+- Summary prints Tiles: 0 (1 - 1).
+
+- Hole on one of the 4 centers:
+- find_quadrant identifies which of the four center cells contains (hole_row, hole_col) and falls inside that quadrant
+- The center tromino is placed on the other three center cells using the current tile
+- That hole's quadrant keeps (hole_row, hole_col) as its blocked cell
+- The other 3 quadrants use their newly filled center as their blocked cell
+
+- Hole on the edge or corner of the board:
+- find_quadrant still splits as intended without any out of bounds issues, since boundary comparisons use top + half and left + half
+- fill_tromino leaves grid[hole_row][hole_col] ("X") untouched
+- It still recurses normally on all 4 quadrants
+
+- Sub-regions not starting at (0, 0):
+- Adressed in our specifications of the program
+- Both fill_carpet and fill_tromino compute sub-region origins and boundaries relative to (top, left)
+
+- Hole in each of the four quadrants:
+- Tests all 0–3 quadrant branches of find_quadrant
+- Verifies that only the hole's quadrant keeps (hole_row, hole_col) while the other three get center-cell blocked cells
