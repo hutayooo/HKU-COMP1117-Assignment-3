@@ -1,18 +1,39 @@
 def count_filled(level):
     # Returns the number of filled cells in a carpet of the given level. Does not use a grid.
-    pass  # your code here
+    if level == 0:
+        return 1
+    return 8 * count_filled(level - 1) # Each level adds 8 times the previous. Same thing as 8 ** level
 
 
 def fill_carpet(grid, top, left, size):
-    # Draws a carpet of side size into grid, in the square region with upper-left
-    # corner (top, left), by setting its filled cells to "#". Returns nothing.
-    pass  # your code here
+    if size == 1:
+        # Base case: a 1x1 cell becomes filled with '#'
+        grid[top][left] = "#"
+        return # Stop recursing
+    sub = size//3
+    
+    for r in range(3):
+        for c in range(3): # Loops through the 3x3 grid of sub-squares
+            if r == 1 and c == 1:
+                # The center square is skipped
+                continue
+            sub_top = top + r * sub  # Top row of the sub-square
+            sub_left = left + c * sub  # Left column of the sub-square
+            fill_carpet(grid, sub_top, sub_left, sub) # Recurse
 
 
 def find_quadrant(top, left, size, row, col):
-    # Returns 0, 1, 2 or 3: the quadrant of the square region with upper-left
-    # corner (top, left) and side size that contains cell (row, col).
-    pass  # your code here
+    half = size // 2  # Splits the region along row and col
+    in_bottom = row >= top + half  # True if row is in the lower half
+    in_right = col >= left + half  # True if col is in the right half
+    
+    if not in_bottom and not in_right:  # Top-left quadrant
+        return 0
+    if not in_bottom and in_right:  # Top-right quadrant
+        return 1
+    if in_bottom and not in_right:  # Bottom-left quadrant
+        return 2
+    return 3  # Bottom-right quadrant
 
 
 def fill_tromino(grid, top, left, size, hole_row, hole_col, tile):
@@ -23,8 +44,12 @@ def fill_tromino(grid, top, left, size, hole_row, hole_col, tile):
 
 
 def print_grid(grid):
-    # Prints one line for each row of the grid. Returns nothing.
-    pass  # your code here
+    # Print each row on its own line without changing grid
+    for row in grid:
+        line = "" # One output line per row
+        for cell in row:
+            line = line + "{:>3}".format(cell) # Append and format each cell using the supplied width-3 format
+        print(line)
 
 
 def main():
