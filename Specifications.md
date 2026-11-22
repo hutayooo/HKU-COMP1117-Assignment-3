@@ -97,29 +97,52 @@ Level 3 (Example 2)= 8x64 = 512 filled
 - It must leave the region's existing blocked cell (hole_row, hole_col)
 - It must also not touch any already-filled tromino cells inside the region, and all cells outside the region must also be untouched
 - Returns the next available tile integer
+
 - **Base case:** which size, what is placed, and what is returned?
-- **The center cells:** for a region starting at (top, left), which four
-  cells are they? Which quadrant is each one in?
-- **The center tromino:** which three center cells does it cover, and which
-  number does it get?
-- **Each quadrant's blocked cell:** for the quadrant that holds the region's
-  blocked cell, and for the other three.
-- **The numbering:** the order the quadrants are tiled in, which number each
-  quadrant starts from, and what the whole call returns. Check your rule
-  against your trace of Example 3.
+- When size == 1, the region is a single cell ((hole_row, hole_col) is already blocked/filled), so nothing is placed on grid and tile is returned unchanged
+
+- **The center cells:**
+- With half = size // 2, the four cells meeting at the center of the region are
+- (top + half - 1, left + half - 1) in quadrant 0 (top-left)
+- (top + half - 1, left + half) in quadrant 1 (top-right)
+- (top + half, left + half - 1) in quadrant 2 (bottom-left)
+- (top + half, left + half) in quadrant 3 (bottom-right)
+
+- **The center tromino:**
+- It covers the three center cells that do not lie in the quadrant containing (hole_row, hole_col)
+- All three receive the current tile number. Then tile increments by 1 (tile + 1) before tiling the sub-quadrants
+
+- **Each quadrant's blocked cell:**
+- For the quadrant containing (hole_row, hole_col), its blocked cell remains (hole_row, hole_col)
+For each of the other three quadrants, its blocked cell is the center cell belonging to that quadrant, the one that was just filled with tile
+
+- **The numbering:**
+- Quadrants are tiled in order 0, 1, 2, 3, each starting from the tile value returned by the previous step
+- The whole call returns the final tile value after all four quadrants finish
+-  For example in example 3, placing the center tromino uses tile, advancing to tile + 1 for quadrant 0, whose returned next ID feeds quadrant 1, then 2, then 3, ending with the final next-available tile ID
 
 ### print_grid(grid)
 
-- **What it receives, what it prints and what it returns:** how many lines,
-  how many characters per cell, and what does it leave unchanged?
+- **What it receives, what it prints and what it returns:**
+- It receives grid, (a 2D list representing the carpet or tromino board)
+- It prints 1 line per row, so as many lines as len(grid)
+- It formats each cell with a consistent width, according to the assignment's board format, specifically "{:>3}".format(cell)
+- It leaves grid completely unchanged, and returns None/0
 
 ### main()
 
-- **What it does, in order:** reading input, building the starting grid,
-  drawing, printing.
-- **The summary line:** what is counted for each pattern, and where does the
-  number come from? Why is the number of tiles one less than the value the
-  first call of `fill_tromino` returns?
+- **What it does, in order:**
+- Reads the user's choice of pattern/task and its parameters (recursion level for Sierpinski carpet, or board level and initial blocked cell (hole_row, hole_col) for tromino tiling)
+- Allocates the 2D grid of the required dimensions and initializes cells to their starting values ("." for empty carpet cells, or 0 empty board cells, or "X" for the blocked cell)
+- Calls the recursive functions (fill_carpet or fill_tromino)
+- Calls print_grid(grid) to display the completed grid, followed by the summary line
+
+- **The summary line:**
+- For carpet, it reports the number of filled "#" cells, which comes from count_filled(level)
+- For tiling, it reports the total number of tiles placed on the board
+- It comes from subtracting 1 from the final next tile value returned by the fill_tromino call (next_tile - 1)
+- fill_tromino starts at tile = 1 and increments tile by 1 after each tromino is placed so that each call receives and returns the next unused tile ID
+- So, after placing k tiles, the counter reaches k + 1 and returns k + 1. So the actual number of tiles placed is (k + 1) - 1 = k
 
 ## Edge cases
 
