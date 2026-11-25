@@ -1,11 +1,89 @@
 # Function checks
+count_filled(0) == 1
 count_filled(1) == 8
+count_filled(2) == 64
+count_filled(3) == 512
+find_quadrant(0, 0, 4, 1, 1) == 0
 find_quadrant(0, 0, 4, 1, 2) == 1
+find_quadrant(0, 0, 4, 2, 1) == 2
+find_quadrant(0, 0, 4, 2, 2) == 3
+find_quadrant(2, 4, 4, 3, 5) == 0
+find_quadrant(2, 4, 4, 3, 6) == 1
+find_quadrant(2, 4, 4, 4, 5) == 2
+find_quadrant(2, 4, 4, 4, 6) == 3
 
 # Program cases
 1
+0
+  #
+Filled: 1
+
+2
+0
+0
+0
+  X
+Tiles: 0
+
 1
-  #  #  #
-  #  .  #
-  #  #  #
-Filled: 8
+2
+  #  #  #  #  #  #  #  #  #
+  #  .  #  #  .  #  #  .  #
+  #  #  #  #  #  #  #  #  #
+  #  #  #  .  .  .  #  #  #
+  #  .  #  .  .  .  #  .  #
+  #  #  #  .  .  .  #  #  #
+  #  #  #  #  #  #  #  #  #
+  #  .  #  #  .  #  #  .  #
+  #  #  #  #  #  #  #  #  #
+Filled: 64
+
+2
+2
+0
+0
+  X  2  3  3
+  2  2  1  3
+  4  1  1  5
+  4  4  5  5
+Tiles: 5
+
+2
+2
+0
+1
+  2  X  3  3
+  2  2  1  3
+  4  1  1  5
+  4  4  5  5
+Tiles: 5
+
+2
+2
+1
+2
+  2  2  3  3
+  2  1  X  3
+  4  1  1  5
+  4  4  5  5
+Tiles: 5
+
+2
+2
+2
+0
+  2  2  3  3
+  2  1  1  3
+  X  4  1  5
+  4  4  5  5
+Tiles: 5
+
+2
+2
+3
+3
+  2  2  3  3
+  2  1  1  3
+  4  1  5  5
+  4  4  5  X
+Tiles: 5

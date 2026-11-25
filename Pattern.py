@@ -37,10 +37,52 @@ def find_quadrant(top, left, size, row, col):
 
 
 def fill_tromino(grid, top, left, size, hole_row, hole_col, tile):
-    # Tiles the square region with upper-left corner (top, left) and side size,
-    # whose blocked cell is (hole_row, hole_col), numbering trominoes from tile.
-    # Returns the next unused tile number.
-    pass  # your code here
+    if size == 1: # Base case: a 1x1 region has only the blocked cell, so place nothing and return tile
+        return tile # Next unsued tile number is the same
+    
+    half = size//2 # Split the region into quadrants
+    hole_quad = find_quadrant(top, left, size, hole_row, hole_col) # Quadrant holding the hole
+    
+    center_cells = [
+        (top + half - 1, left + half - 1),  # Quadrant 0
+        (top + half - 1, left + half),  # Quadrant 1
+        (top + half, left + half - 1),  # Quadrant 2
+        (top + half, left + half),  # Quadrant 3
+    ]
+    
+    for q in range(4):
+        if q != hole_quad: # Skip quadrant with a blocked cell
+            cell = center_cells[q] # Tuple (cr, cc)
+            cr = cell[0] # Center row
+            cc = cell[1] # Center column 
+            grid[cr][cc] = tile # Fill the center cell with the current tile number
+    next_tile = tile + 1 # Increment the tile number for the next use
+    
+    sub_origins = [ # Upper-left corners for each quadrant
+        (top, left),  # Quadrant 0
+        (top, left + half),  # Quadrant 1
+        (top + half, left),  # Quadrant 2
+        (top + half, left + half),  # Quadrant 3
+    ]
+    
+    for q in range(4):
+        origin = sub_origins[q] # Tuple (sub_top, sub_left)
+        sub_top = origin[0] # Top row
+        sub_left = origin[1] # Left col
+        
+        if q == hole_quad: # Quadrant with the blocked cell
+            b_row = hole_row    
+            b_col = hole_col
+            
+        else: #Other three quadrants use their newly filled center cell as blocked
+            blocked = center_cells[q] # Tuple (cr, cc)
+            b_row = blocked[0] # Blocked row
+            b_col = blocked[1] # Blocked col
+        
+        # Pass next_tile in and update it with the next unused tile ID returned
+        next_tile = fill_tromino(grid, sub_top, sub_left, half, b_row, b_col, next_tile)
+        
+    return next_tile
 
 
 def print_grid(grid):
@@ -53,15 +95,50 @@ def print_grid(grid):
 
 
 def main():
-    # main() is yours to write, by working it out with the AI assistant.
-    # Some things it will need to do:
-    #   - read the pattern and the level, and for a tromino the hole position
-    #   - build a starting grid of the right size, filled with the right starting value
-    #   - call fill_carpet or fill_tromino once, on the whole grid
-    #   - print the grid with print_grid
-    #   - print the summary line: for a carpet use count_filled, for a tiling
-    #     use the value fill_tromino returns
-    pass
+    # Input
+    pattern = int(input("Pattern (1 carpet, 2 tromino): "))
+    level = int(input("Level: "))
+    
+    hole_row = 0
+    hole_col = 0 # Default
+    if pattern == 2: # For tromino, read the hole coordinates
+        hole_row = int(input("Hole row: "))
+        hole_col = int(input("Hole column: "))
 
+    if pattern == 1: # Carpet
+        size = 3 ** level # Size of the grid
+        grid = []
+        for r  in range(size): # Fill each cell with '.'
+            row = [] 
+            for c in range(size):
+                row.append(".") # Fill with empty cells
+            grid.append(row) # Once each row is filled, append it to the grid   
+        
+        fill_carpet(grid, 0, 0, size) # Fill the carpet pattern starting from 0,0
+        
+        # Print grid and summary
+        print_grid(grid)
+        filled_count = count_filled(level) # Count filled cells without using the grid
+        print (f"Filled: {filled_count}") # Summary line, number of filled cells
+    
+    elif pattern == 2: # Tromino
+        size = 2 ** level # Size of the grid
+        grid = []
+        for r in range(size): # Fill each cell with 0
+            row = [] 
+            for c in range(size):
+                row.append(0) # Fill with empty cells (int 0)
+            grid.append(row) # Once each row is filled, append it to the grid
+        
+        grid[hole_row][hole_col] = "X" # Mark the blocked cell with "X"
+        
+        val = fill_tromino(grid, 0, 0, size, hole_row, hole_col, 1) # Tile board from tile 1
+        
+        # Print grid and summary
+        print_grid(grid)
+        tiles_placed = val - 1 # Number of tiles placed is one less than returned value
+        print (f"Tiles: {tiles_placed}") # Summary line, number of tiles placed
+        
+        
 
 main()  # Don't change this
